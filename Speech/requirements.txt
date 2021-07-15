@@ -1,0 +1,16 @@
+
+## Install dependencies
+!pip install wget
+!apt-get install sox libsndfile1 ffmpeg
+!pip install unidecode
+!pip install matplotlib>=3.3.2
+
+## Install NeMo
+BRANCH = 'r1.1.0'
+!python -m pip install git+https://github.com/NVIDIA/NeMo.git@$BRANCH#egg=nemo_toolkit[all]
+
+## Grab the config we'll use in this example
+!mkdir configs
+!wget -P configs/ https://raw.githubusercontent.com/NVIDIA/NeMo/$BRANCH/examples/asr/conf/config.yaml
+pip install librosa
+

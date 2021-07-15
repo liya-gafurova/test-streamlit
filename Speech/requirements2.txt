@@ -1,0 +1,4 @@
+# NOTE: pip shows imcompatible errors due to preinstalled libraries but you do not need to care
+!pip install -q espnet==0.10.0 parallel_wavegan==0.4.8
+!pip install -q espnet_model_zoo
+!pip install -q pyopenjtalk

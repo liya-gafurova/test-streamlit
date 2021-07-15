@@ -1,0 +1,50 @@
+FROM ubuntu:18.04
+
+RUN  apt update &&  apt upgrade
+RUN  apt-get install wget build-essential checkinstall -y
+
+RUN cd /usr/src
+RUN  wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz
+RUN  tar xzf Python-3.7.9.tgz
+WORKDIR  Python-3.7.9
+RUN ls
+
+RUN  ./configure --enable-optimizations
+RUN make -j 8
+
+
+RUN  apt-get install build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev \
+zlib1g-dev libssl-dev openssl libgdbm-dev libgdbm-compat-dev liblzma-dev libreadline-dev \
+libncursesw5-dev libffi-dev uuid-dev -y
+
+RUN make altinstall
+RUN python3.7 --version
+
+WORKDIR /usr/src/app
+RUN apt-get install python3-pip -y
+RUN pip3 install wget
+RUN apt-get install sox libsndfile1 ffmpeg -y
+RUN pip3 install unidecode
+RUN pip3 install matplotlib>=3.3.2
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt install git-all -y
+RUN pip3 install cmake
+RUN pip3 install --upgrade cython
+ENV BRANCH='r1.1.0'
+RUN pip3 install git+https://github.com/NVIDIA/NeMo.git@$BRANCH#egg=nemo_toolkit[all]
+
+## Grab the config we'll use in this example
+RUN mkdir configs
+RUN wget -P configs/ https://raw.githubusercontent.com/NVIDIA/NeMo/$BRANCH/examples/asr/conf/config.yaml
+RUN pip3 install librosa
+
+RUN pip3 install -q espnet==0.10.0 parallel_wavegan==0.4.8
+RUN pip3 install -q espnet_model_zoo
+RUN pip3 install -q pyopenjtalk
+
+COPY final_requirements.txt ./
+RUN pip3 install --no-cache-dir -r final_requirements.txt
+
+COPY . .
+
+CMD [ "streamlit", " run main.py" ]
